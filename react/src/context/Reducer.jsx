@@ -5,13 +5,13 @@ export const cartReducer = (state, action) => {
     case "REMOVE_FROM_CART":
       return {
         ...state,
-        cart: state.cart.filter((c) => c.id !== action.payload),
+        cart: state.cart.filter((c) => c._id !== action.payload),
       };
     case "CHANGE_CART_QTY":
         return {
          ...state,
           cart: state.cart.map((c) =>
-            c.id === action.payload.id
+            c._id === action.payload.id
              ? {...c, qty: action.payload.qty}
               : c
           ),

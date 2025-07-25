@@ -3,41 +3,44 @@ import { Link, useNavigate } from "react-router-dom";
 import Img from "../assets/signup.png";
 import { useFormik } from "formik";
 import { SignupSchema } from "../schemas/Index";
+import Footer from "./Footer";
 
 const SignIn = () => {
   const credentials = {
-    username: "",
+    name: "",
     email: "",
     password: "",
-    confirmPassword: "",
   };
   const navigate =useNavigate()
 
   // const navigate = useNavigate();
 
-  const { values, handleChange, handleBlur, handleSubmit, errors, touched } =
+  const { values, handleChange, handleBlur,handleSubmit, errors, touched } =
     useFormik({
       initialValues: credentials,
       validationSchema: SignupSchema,
       onSubmit: async (values, action) => {
         console.log(values);
 
-        const { username, email, password } = values;
+        const { name, email, password } = values;
 
         try {
-          const response = fetch("http://localhost:5000/api/auth/createUser", {
+          const response =  await fetch("http://localhost:3000/api/auth/createUser", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ username, email, password }),
+            body: JSON.stringify({ name, email, password }),
           });
 
+          console.log('Response status:', response.status);
+
           const json = await response.json();
+          console.log('Response data:', json);
 
           if (json.success) {
             localStorage.setItem("token", json.authToken);
-            navigate("/home");
+            navigate("/signin");
             action.resetForm();
           } else {
             console.error("Login failed", json.error);
@@ -53,14 +56,14 @@ const SignIn = () => {
   // const handleSubmit = async (e) => {
   //   e.preventDefault();
   //   console.log("Form submitted", credentials);
-  //   const { username, password, email } = credentials;
+  //   const { name, password, email } = credentials;
 
   //   const response = await fetch("", {
   //     method: "POST",
   //     headers: {
   //       "Content-Type": "application/json",
   //     },
-  //     body: JSON.stringify({ username, password, email }),
+  //     body: JSON.stringify({ name, password, email }),
   //   });
   //   const json = await response.json();
   //   if (json.success) {
@@ -82,19 +85,19 @@ const SignIn = () => {
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
                 <label htmlFor="name" className="form-label fw-bold">
-                  Username
+                  name
                 </label>
                 <input
                   type="name"
-                  name="username"
-                  value={values.username}
+                  name="name"
+                  value={values.name}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   className="form-control"
                   id="name"
                 />
-                {errors.username && touched.username ? (
-                  <p className="text-danger">{errors.username}</p>
+                {errors.name && touched.name ? (
+                  <p className="text-danger">{errors.name}</p>
                 ) : null}
               </div>
               <div className="mb-3">
@@ -102,7 +105,7 @@ const SignIn = () => {
                   Email
                 </label>
                 <input
-                  type="name"
+                  type="email"
                   name="email"
                   value={values.email}
                   onChange={handleChange}
@@ -131,22 +134,6 @@ const SignIn = () => {
                   <p className="text-danger">{errors.password}</p>
                 ) : null}
               </div>
-              <div className="mb-3">
-                <label htmlFor="confirmpassword" className="form-label fw-bold">
-                  Confirm Password
-                </label>
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  value={values.confirmPassword}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className="form-control"
-                  id="confirmpassword"
-                />
-                {errors.confirmPassword && touched.confirmPassword ? (
-                  <p className="text-danger">{errors.confirmPassword}</p>
-                ) : null}
 
                 <p className="mt-3">
                   Already have an account?
@@ -158,7 +145,7 @@ const SignIn = () => {
                     Signin
                   </Link>
                 </p>
-              </div>
+             
 
               <button
                 type="submit"
@@ -180,6 +167,7 @@ const SignIn = () => {
           />
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

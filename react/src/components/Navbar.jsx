@@ -5,6 +5,7 @@ import ProductContext from "../context/ProductContext";
 
 const Navbar = (props) => {
   const { state } = useContext(ProductContext);
+
   return (
     <div>
       <nav
@@ -27,7 +28,7 @@ const Navbar = (props) => {
           </button>
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-              <li className="nav-item">
+              <li className="nav-item mt-2">
                 <Link
                   className="nav-link active"
                   aria-current="page"
@@ -36,7 +37,7 @@ const Navbar = (props) => {
                   Home
                 </Link>
               </li>
-              <li className="nav-item">
+              <li className="nav-item mt-2">
                 <Link
                   className="nav-link active"
                   aria-current="page"
@@ -45,7 +46,7 @@ const Navbar = (props) => {
                   About
                 </Link>
               </li>
-              <li className="nav-item">
+              <li className="nav-item mt-2">
                 <Link
                   className="nav-link active"
                   aria-current="page"
@@ -54,7 +55,7 @@ const Navbar = (props) => {
                   Products
                 </Link>
               </li>
-              <li className="nav-item">
+              <li className="nav-item mt-2">
                 <Link
                   className="nav-link active"
                   aria-current="page"
@@ -63,7 +64,7 @@ const Navbar = (props) => {
                   Add Products
                 </Link>
               </li>
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <Link
                   className="nav-link active"
                   aria-current="page"
@@ -71,8 +72,8 @@ const Navbar = (props) => {
                 >
                   NPM Practice
                 </Link>
-              </li>
-              <li className="nav-item">
+              </li> */}
+              {/* <li className="nav-item">
                 <Link
                   className="nav-link active"
                   aria-current="page"
@@ -80,8 +81,8 @@ const Navbar = (props) => {
                 >
                   Users
                 </Link>
-              </li>
-              <li className="nav-item">
+              </li> */}
+              <li className="nav-item mt-2">
                 <Link
                   className="nav-link active"
                   aria-current="page"
@@ -90,7 +91,7 @@ const Navbar = (props) => {
                   News
                 </Link>
               </li>
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <Link
                   className="nav-link active"
                   aria-current="page"
@@ -107,7 +108,7 @@ const Navbar = (props) => {
                 >
                   UseReducer
                 </Link>
-              </li>
+              </li> */}
               <Link className="nav-link position-relative" to="/cart">
                 <button
                   type="button"

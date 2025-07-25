@@ -1,5 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import NewsContext from "../context/NewsContext";
+import Footer from "./Footer";
 
 const News = () => {
   const { article, news, image } = useContext(NewsContext);
@@ -30,6 +31,7 @@ const News = () => {
             </div>
           ))}
       </div>
+      <Footer />
     </div>
   );
 };

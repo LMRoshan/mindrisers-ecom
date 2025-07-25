@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Img from "../assets/signup.png";
 import { useFormik } from "formik";
-import { SignupSchema } from "../schemas/Index";
+import { LoginSchema } from "../schemas/Index";
+import Footer from "./Footer";
 
 const SignIn = () => {
   const [passwordVisibility, setPasswordVisibility] = useState(false);
@@ -13,63 +14,83 @@ const SignIn = () => {
   };
 
   const credentials = {
-    username: "",
+    email: "",
     password: "",
   };
 
   const navigate = useNavigate();
 
-  const { values, handleChange, handleBlur, errors, touched } = useFormik({
-    initialValues: credentials,
-    validationSchema: SignupSchema,
-    onSubmit: async (values, action) => {
-      const { username, password } = values;
-      try {
-        const response = fetch("http://localhost:3000/api/auth/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ username, password }),
-        });
+  const { values, handleChange, handleBlur, handleSubmit, errors, touched } =
+    useFormik({
+      initialValues: credentials,
+      validationSchema: LoginSchema,
+      onSubmit: async (values, action) => {
+        const { email, password } = values;
+        try {
+          const response = await fetch("http://localhost:3000/api/auth/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email, password }),
+          });
 
-        const json = (await response).json();
+          const json = await response.json();
 
-        if (json.success) {
-          localStorage.setItem("token", json.token);
-          navigate("/home");
-          action.resetForm();
-        } else {
-          console.error("Login failed", json.error);
+          // if (json.success) {
+          //   localStorage.setItem("token", json.authToken);
+          //   navigate("/home");
+          //   action.resetForm();
+
+          // } else {
+          //   console.error("Login failed", json.error);
+          // }
+
+          if (response.ok) {
+            localStorage.setItem("token", json.authToken);
+            navigate("/home");
+            action.resetForm();
+          } else {
+            if (json.error) {
+              console.error("Login failed:", json.error);
+            } else if (json.errors && json.errors.length > 0) {
+              console.error(
+                "Login failed due to validation errors:",
+                json.errors
+              );
+            } else {
+              console.error("Login failed: An unknown error occurred.", json);
+              // alert("Login failed: Please try again.");
+            }
+          }
+        } catch (error) {
+          console.log("Network Error", error);
+        } finally {
+          action.setSubmitting(false);
         }
-      } catch (error) {
-        console.log("Network Error", error);
-      } finally {
-        action.setSubmitting(false);
-      }
-    },
-  });
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("Form submitted", credentials);
-    const { username, password } = credentials;
-
-    const response = await fetch("", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password }),
     });
-    const json = await response.json();
-    if (json.success) {
-      localStorage.setItem("token", json.authToken);
-      navigate("/home");
-    } else {
-      console.error("Login failed", json.error);
-    }
-  };
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   console.log("Form submitted", credentials);
+  //   const { email, password } = credentials;
+
+  //   const response = await fetch("", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({ email, password }),
+  //   });
+  //   const json = await response.json();
+  //   if (json.success) {
+  //     localStorage.setItem("token", json.authToken);
+  //     navigate("/home");
+  //   } else {
+  //     console.error("Login failed", json.error);
+  //   }
+  // };
 
   // const handleChange = (e) => {
   //   setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -96,22 +117,22 @@ const SignIn = () => {
             </h1>
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
-                <label htmlFor="name" className="form-label fw-bold">
-                  Username
+                <label htmlFor="email" className="form-label fw-bold">
+                  Email
                 </label>
                 <div className="input-group mb-3">
                   <input
-                    type="name"
-                    name="username"
-                    value={values.username}
+                    type="email"
+                    name="email"
+                    value={values.email}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     className="form-control"
-                    id="name"
+                    id="email"
                   />
                 </div>
-                {errors.username && touched.username ? (
-                  <p className="text-danger">{errors.username}</p>
+                {errors.email && touched.email ? (
+                  <p className="text-danger">{errors.email}</p>
                 ) : null}
               </div>
               <div className="mb-3">
@@ -161,6 +182,7 @@ const SignIn = () => {
           </div>
         </div>
       </div>
+      <Footer/>
     </div>
   );
 };

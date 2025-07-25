@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import ProductContext from "../context/ProductContext";
+import Footer from "./Footer";
 
 const Cart = () => {
   const { state, dispatch } = useContext(ProductContext);
@@ -60,7 +61,7 @@ const Cart = () => {
                         <tr key={item.id} className="align-middle">
                           <td>
                             <img
-                              src={item.img}
+                              src={`http://localhost:3000/uploads/${item.img[0]}`}
                               className="img-fluid rounded"
                               alt={item.name}
                               style={{ maxHeight: "80px" }}
@@ -68,7 +69,7 @@ const Cart = () => {
                           </td>
                           <td>
                             <h6 className="mb-1">{item.name}</h6>
-                            <small className="text-muted">ID: {item.id}</small>
+                            <small className="text-muted">ID: {item._id}</small>
                           </td>
                           <td>NPR {item.price.toLocaleString()}</td>
                           <td>
@@ -78,7 +79,7 @@ const Cart = () => {
                                 dispatch({
                                   type: "CHANGE_CART_QTY",
                                   payload: {
-                                    id: item.id,
+                                    id: item._id,
                                     qty: parseInt(e.target.value),
                                   },
                                 })
@@ -100,7 +101,7 @@ const Cart = () => {
                             {/* <!-- Button trigger modal --> */}
                             <button
                               type="button"
-                              onClick={() => removeFromCart(item.id)}
+                              onClick={() => removeFromCart(item._id)}
                               className="btn btn-outline-danger"
                               data-bs-toggle="modal"
                               data-bs-target="#exampleModal"
@@ -188,6 +189,7 @@ const Cart = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
