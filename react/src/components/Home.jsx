@@ -6,7 +6,6 @@ import ProductContext from "../context/ProductContext";
 import { PiDotsThreeOutlineFill } from "react-icons/pi";
 import EditProductModal from "./EditProd";
 import Footer from "./Footer";
-import Img2 from "../assets/about.png";
 import { Link } from "react-router-dom";
 import "../App.css";
 
@@ -214,7 +213,6 @@ const Home = () => {
           />
         )}
       </div>
-      <ToastContainer />
       <Footer />
     </>
   );
