@@ -14,13 +14,16 @@ router.post('/addProduct', fetchUser, [
 
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
+        console.error("Validation Errors:", errors.array());
         return res.status(400).json({ errors: errors.array() })
     }
 
     try {
 
         const { name, description, price, instock } = req.body
-        let img = req.files.map(e => e.filename) 
+        let img = req.files.map(e => {
+            return e.filename
+        })
 
         const prod = await Products.create({ name, description, price, instock, img, user: req.user.id })
         res.json(prod)
@@ -29,7 +32,9 @@ router.post('/addProduct', fetchUser, [
         // const savedProd = await prod.save()
         // res.json(savedProd)
 
+
     } catch (error) {
+        console.error("Error creating product:", error);
         return res.status(500).send("Server Error")
     }
 })
@@ -38,7 +43,16 @@ router.post('/addProduct', fetchUser, [
 // get Products
 router.get('/getProducts', fetchUser, async (req, res) => {
     try {
-        const products = await Products.find({})
+        const products = await Products.find({user: req.user.id})
+        res.json(products)
+    } catch (error) {
+        return res.status(500).send("Server Error")
+    }
+})
+
+router.get('/gethomeProducts', fetchUser, async (req, res) => {
+    try {
+        const products = await Products.find()
         res.json(products)
     } catch (error) {
         return res.status(500).send("Server Error")
@@ -63,7 +77,8 @@ router.put('/updateProduct/:id', fetchUser, async (req, res) => {
             return res.status(401).send("Not Allowed")
         }
 
-        product = await Products.findOneAndUpdate(req.params.id, { $set: newProd }, { new: true })
+        product = await Products.findByIdAndUpdate(req.params.id, { $set: newProd }, { new: true })
+        res.json({ success: true, product })
     } catch (error) {
         return res.status(500).send("Server Error")
     }
@@ -82,11 +97,11 @@ router.delete('/deleteProduct/:id', fetchUser, async (req, res) => {
         let product = await Products.findById(req.params.id)
         if (!product) return res.status(404).send("Product not found")
 
-        if (product.user || product.user.toString() !== req.user.id) {
+        if (!product.user || product.user.toString() !== req.user.id) {
             return res.status(401).send("Not Allowed")
         }
 
-        product = await Products.findOneAndDelete(req.params.id)
+        product = await Products.findByIdAndDelete(req.params.id)
         res.json({ "Success": "Product has been deleted", product })
     } catch (error) {
         return res.status(500).send("Server Error")

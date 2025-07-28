@@ -14,25 +14,38 @@ router.post('/createUser', [
     body('email').isEmail(),
     body('password').isLength({ min: 5 })
 ], async (req, res) => {
+    console.log('Received ', req.body);
+
 
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
+        console.log('Validation errors:', errors.array());
         return res.status(400).json({ errors: errors.array() })
     }
     try {
         let user = await User.findOne({ email: req.body.email })
 
         if (user) {
+            console.log('User already exists:', req.body.email);
             return res.status(400).json({ message: 'User already exists' })
         }
 
         const salt = await bcrypt.genSalt(10)
         const secPassword = await bcrypt.hash(req.body.password, salt)
+
+        console.log('Creating user with:', { // Add this line
+            name: req.body.name,
+            email: req.body.email,
+            password: 'hashed'
+        });
+
         user = await User.create({
             name: req.body.name,
             email: req.body.email,
             password: secPassword
         })
+
+        console.log('User created successfully:', user._id);
 
         const data = {
             user: {
@@ -40,10 +53,11 @@ router.post('/createUser', [
             }
         }
 
-        const token = jwt.sign(data, JWT_SECRET)
+        const authToken = jwt.sign(data, JWT_SECRET)
 
-        res.json({ user, token })
+        res.json({ success: true, user, authToken })
     } catch (error) {
+        console.error('Database error:', error);
         res.status(500).send("Server Error")
     }
 })
@@ -53,22 +67,22 @@ router.post(
     "/login",
     [
         body("email").isEmail(),
-        body("password").isLength({ min: 8 })
+        body("password").isLength({ min: 5 })
     ],
     async (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
+            return res.status(400).json({success: false, errors: errors.array() });
         }
         const { email, password } = req.body;
         try {
             let user = await User.findOne({ email: email });
             if (!user) {
-                return res.status(400).json({ error: "pls regsiter your email first" });
+                return res.status(400).json({success: false, error: "pls regsiter your email first" });
             }
             const comparePassword = await bcrypt.compare(password, user.password);
             if (!comparePassword) {
-                return res.status(400).json({ error: "password doesn't match" });
+                return res.status(400).json({success: false, error: "password doesn't match" });
             }
             const data = {
                 user: {
@@ -76,8 +90,9 @@ router.post(
                 },
             };
             const authToken = jwt.sign(data, JWT_SECRET);
-            res.json({ user, authToken });
+            res.json({success: true, user, authToken });
         } catch (error) {
+            console.error(error);
             res.status(500).send("internal server error");
         }
     }
@@ -90,7 +105,7 @@ router.get('/getUser', fetchUser, async (req, res) => {
         const user = await User.findById(req.user.id).select("-password")
         res.send(user)
     } catch (error) {
-        res.status(500).send("Server Error")
+        return res.status(500).send("Server Error")
     }
 })
 
